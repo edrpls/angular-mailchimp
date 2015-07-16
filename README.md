@@ -8,9 +8,9 @@ bower install angular-mailchimp
 
 Add a `<script>` to your `index.html`:
 
-```html
-<script src="/bower_components/angular-mailchimp/angular-mailchimp.js"></script>
-```
+
+`<script src="/bower_components/angular-mailchimp/angular-mailchimp.js"></script>`
+
 
 And add `mailchimp` as a dependency for your app:
 

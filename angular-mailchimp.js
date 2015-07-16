@@ -4,20 +4,21 @@
  * License: MIT
  */
 
-'use strict';
-
 angular.module("template/ng-mailchimp-form.html", []).run(["$templateCache", function($templateCache) {
+  'use strict';
   $templateCache.put("template/ng-mailchimp-form.html",
-    "<form name=\"mailchimpsubscriptionform\">\n" +
+    "<button type=\"button\" ng-bind=\"nmcConfig.title || 'Newsletter'\" ng-click=\"toggleForm()\" ng-if=\"!showForm\"></button>\n" +
+    "<form ng-if=\"showForm\" name=\"mailchimpsubscriptionform\">\n" +
+    "  <button type=\"button\" ng-click=\"toggleForm()\"><span class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></span></button>\n" +
     "  <div ng-hide=\"mailchimp.result === 'success'\">\n" +
     "    <input class=\"hidden\" type=\"hidden\" ng-model=\"mailchimp.username\">\n" +
     "    <input class=\"hidden\" type=\"hidden\" ng-model=\"mailchimp.dc\">\n" +
     "    <input class=\"hidden\" type=\"hidden\" ng-model=\"mailchimp.u\">\n" +
     "    <input class=\"hidden\" type=\"hidden\" ng-model=\"mailchimp.id\">\n" +
-    "    <input type=\"text\" name=\"fname\" ng-model=\"mailchimp.FNAME\" placeholder=\"First name\">\n" +
-    "    <input type=\"text\" name=\"lname\" ng-model=\"mailchimp.LNAME\" placeholder=\"Last name\">\n" +
-    "    <input type=\"email\" name=\"email\" ng-model=\"mailchimp.EMAIL\" placeholder=\"Email address\" required>\n" +
-    "    <button ng-disabled=\"MailchimpSubscriptionForm.$invalid\" ng-click=\"addSubscription(mailchimp)\">Join</button>\n" +
+    "    <input type=\"text\" name=\"fname\" ng-model=\"mailchimp.FNAME\" placeholder=\"{{::nmcConfig.fname || 'First Name'}}\">\n" +
+    "    <input type=\"text\" name=\"lname\" ng-model=\"mailchimp.LNAME\" placeholder=\"{{::nmcConfig.lname || 'Last Name'}}\">\n" +
+    "    <input type=\"email\" name=\"email\" ng-model=\"mailchimp.EMAIL\" placeholder=\"{{::nmcConfig.placeholder || 'Email'}}\" required>\n" +
+    "    <button ng-disabled=\"MailchimpSubscriptionForm.$invalid\" ng-click=\"addSubscription(mailchimp)\" ng-bind=\"nmcConfig.subscribe || 'Subscribe'\"></button>\n" +
     "  </div>\n" +
     "  <!-- Show error message if MailChimp unsuccessfully added the email to the list. -->\n" +
     "  <div ng-show=\"mailchimp.result === 'error'\" ng-cloak>\n" +
@@ -34,19 +35,48 @@ angular.module("template/ng-mailchimp-form.html", []).run(["$templateCache", fun
 
 angular.module('mailchimp', ['template/ng-mailchimp-form.html', 'ng', 'ngResource', 'ngSanitize'])
   /**
+   * $log, $resource, $rootScope
    * Form directive for a new Mailchimp subscription.
    */
-  .directive('ngMailchimp', [function () {
+  .directive('ngMailchimp', ['$resource', '$log', '$rootScope', function ($resource, $log, $rootScope) {
+    'use strict';
     return {
       templateUrl: 'template/ng-mailchimp-form.html',
       restrict: 'E',
-      transclude: true,
-      controller: function ($http, $log, $resource, $scope, $rootScope, $element) {
-        console.log($scope);
-        console.log($element);
+      scope: {
+        nmcConfig : '=',
+      },
+      link: function (scope, element, attrs) {
+        var DIR_PREFIX = 'nmc';
+
+        scope.showForm = false;
+        scope.mailchimp = {};
+
+        (function createMailchimpObject () {
+          var mailchimp = {
+            username: scope.nmcConfig.username,
+            dc: scope.nmcConfig.dc,
+            u: scope.nmcConfig.u,
+            id: scope.nmcConfig.id
+          };
+          //    tmp  = '';
+
+          //for (var c in attrs) {
+          //  if (attrs.hasOwnProperty(c) && c.indexOf(DIR_PREFIX) > -1) {
+          //    tmp = c.split(DIR_PREFIX).pop().toLowerCase();
+          //    mailchimp[tmp] = attrs[c];
+          //  }
+          //}
+
+          scope.mailchimp = mailchimp;
+        })();
+
+        scope.toggleForm = function () {
+          scope.showForm = !scope.showForm;
+        };
 
         // Handle clicks on the form submission.
-        $scope.addSubscription = function (mailchimp) {
+        scope.addSubscription = function (mailchimp) {
           var actions,
               MailChimpSubscription,
               params = {},
@@ -91,12 +121,12 @@ angular.module('mailchimp', ['template/ng-mailchimp-form.html', 'ng', 'ngResourc
                     errorMessageParts.shift(); // Remove the error number
                   mailchimp.errorMessage = errorMessageParts.join(' ');
                 } else {
-                  mailchimp.errorMessage = 'Sorry! An unknown error occured.';
+                  mailchimp.errorMessage = scope.nmcConfig.err || 'Sorry! An unknown error occured.';
                 }
               }
               // MailChimp returns a success.
               else if (response.result === 'success') {
-                mailchimp.successMessage = response.msg;
+                mailchimp.successMessage = scope.nmcConfig.ok || response.msg;
               }
 
               //Broadcast the result for global msgs

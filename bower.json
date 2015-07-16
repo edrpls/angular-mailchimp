@@ -1,7 +1,7 @@
 {
   "name": "angular-mailchimp",
   "main": "angular-mailchimp.js",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "authors": [
     {
       "name": "Eder Sanchez",
@@ -18,6 +18,10 @@
     "angularjs",
     "mailchimp"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ikhos/angular-mailchimp.git"
+  },
   "license": "MIT",
   "homepage": "https://github.com/ikhos/angular-mailchimp",
   "ignore": [

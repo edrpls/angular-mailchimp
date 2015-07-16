@@ -1,0 +1,11 @@
+{
+  "globals": {
+    "angular": true
+  },
+  "predef": [
+    "module"
+  ],
+  "indent": 2,
+  "devel": true,
+  "noempty": true
+}

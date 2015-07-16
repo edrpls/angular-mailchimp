@@ -14,6 +14,10 @@
     "angularjs",
     "mailchimp"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ikhos/angular-mailchimp.git"
+  },
   "license": "MIT",
   "homepage": "https://github.com/ikhos/angular-mailchimp",
   "ignore": [

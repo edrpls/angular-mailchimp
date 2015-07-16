@@ -1,12 +1,16 @@
 {
   "name": "angular-mailchimp",
   "main": "angular-mailchimp.js",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "authors": [
-    {"name": "Eder Sanchez",
-    "web": "http://edrpls.com"},
-    {"name": "Keith Hall",
-    "web": "http://keith.io"}
+    {
+      "name": "Eder Sanchez",
+      "web": "http://edrpls.com"
+    },
+    {
+      "name": "Keith Hall",
+      "web": "http://keith.io"
+    }
   ],
   "description": "Angular directive for facilitating MailChimp subscription. Based on work by http://keith.io",
   "keywords": [

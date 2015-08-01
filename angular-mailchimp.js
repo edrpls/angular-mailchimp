@@ -35,10 +35,10 @@ angular.module("template/ng-mailchimp-form.html", []).run(["$templateCache", fun
 
 angular.module('mailchimp', ['template/ng-mailchimp-form.html', 'ng', 'ngResource', 'ngSanitize'])
   /**
-   * $log, $resource, $rootScope
+   * $log, $resource, $rootScope, $interval
    * Form directive for a new Mailchimp subscription.
    */
-  .directive('ngMailchimp', ['$resource', '$log', '$rootScope', function ($resource, $log, $rootScope) {
+  .directive('ngMailchimp', ['$resource', '$log', '$rootScope', function ($interval, $resource, $log, $rootScope) {
     'use strict';
     return {
       templateUrl: 'template/ng-mailchimp-form.html',
@@ -47,12 +47,13 @@ angular.module('mailchimp', ['template/ng-mailchimp-form.html', 'ng', 'ngResourc
         nmcConfig : '=',
       },
       link: function (scope, element, attrs) {
-        var DIR_PREFIX = 'nmc';
+        var DIR_PREFIX = 'nmc',
+            check = {};
 
         scope.showForm = false;
         scope.mailchimp = {};
 
-        (function createMailchimpObject () {
+        function createMailchimpObject () {
           var mailchimp = {
             username: scope.nmcConfig.username,
             dc: scope.nmcConfig.dc,
@@ -69,7 +70,15 @@ angular.module('mailchimp', ['template/ng-mailchimp-form.html', 'ng', 'ngResourc
           //}
 
           scope.mailchimp = mailchimp;
-        })();
+        }
+
+        check.mailConfCheck = $interval(function () {
+          createMailchimpObject();
+
+          if (scope.mailchimp.username) {
+            $interval.cancel(check.mailConfCheck);
+          }
+        }, 300, 5);
 
         scope.toggleForm = function () {
           scope.showForm = !scope.showForm;
